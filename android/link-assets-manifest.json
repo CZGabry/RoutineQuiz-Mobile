@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/BookletCordel.ttf",
+      "sha1": "2c1818cd19cf872e43b634a8893fcfa6d24710f7"
+    },
+    {
+      "path": "src/assets/fonts/Breathing.ttf",
+      "sha1": "8fecc6cbbde6d259817c970c73ddb8f71d9b9c2f"
+    },
+    {
+      "path": "src/assets/fonts/Cheveuxdange.ttf",
+      "sha1": "9adc586144016e237a1ad787068498c1e9235b78"
+    }
+  ]
+}
