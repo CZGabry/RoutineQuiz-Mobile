@@ -7,9 +7,7 @@ import UploadTextScreen from '../views/UploadTextScreen';
 import Background from '../components/BackgroundComponent'; // Adjust the import path as necessary
 import GeneratedQuestionsScreen from '../views/GeneratedQuestionsScreen';
 import QuizPageScreen from '../views/QuizPageScreen';
-
-
-// Import your left arrow image
+import RoutineManagerScreen from '../views/RoutineManagerScreen';
 import LeftArrowIcon from '../assets/images/leftArrow.png';
 
 const Stack = createNativeStackNavigator();
@@ -57,6 +55,22 @@ function AppNavigator() {
           })}
         /> 
         <Stack.Screen
+          name="RoutineManagerScreen"
+          component={RoutineManagerScreen}
+          options={({ navigation }) => ({
+            headerShown: true, // Show the header for this screen
+            headerTransparent: true, // Make the header transparent
+            headerTitle: '', // Optionally, you can remove the title or customize it
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+                <Image source={LeftArrowIcon} style={{ width: 25, height: 25, marginLeft: 15 }} />
+              </TouchableOpacity>
+            ),
+            // You might also want to adjust the headerTintColor if necessary, for better visibility against the background
+            headerTintColor: '#fff', // This sets the back button and title (if any) color to white
+          })}
+        /> 
+        <Stack.Screen
           name="QuizPageScreen"
           component={QuizPageScreen}
           options={({ navigation }) => ({
@@ -78,3 +92,5 @@ function AppNavigator() {
 }
 
 export default AppNavigator;
+
+

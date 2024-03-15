@@ -12,6 +12,7 @@ const HomeScreen = ({ navigation }) => {
   // Example functions for your buttons
   const generateQuiz = () => navigation.navigate('UploadTextScreen');
   const generatedQuiz = () => navigation.navigate('GeneratedQuestionsScreen');
+  const routineManager = () => navigation.navigate('RoutineManagerScreen');
 
   return (
     <ImageBackground source={require('../assets/images/homePageLogo.jpg')} style={styles.backgroundImage}>
@@ -24,6 +25,10 @@ const HomeScreen = ({ navigation }) => {
         
         <TouchableOpacity style={[styles.button, styles.transparentButton]} onPress={generatedQuiz}>
           <Text style={styles.buttonText}>Generated</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.button, styles.transparentButton]} onPress={routineManager}>
+          <Text style={styles.buttonText}>Routine</Text>
         </TouchableOpacity>
         
         {/* Uncomment if logout button is needed */}

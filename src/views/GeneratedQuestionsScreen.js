@@ -33,10 +33,11 @@ const GeneratedQuestionsScreen = ({navigation}) => {
   }, []);
 
   const renderItem = ({ item, index }) => (
+    console.log(item),
     <TouchableOpacity
       style={styles.row}
       onPress={() => navigation.navigate('QuizPageScreen', {
-        question: item,
+        quizId: item.quiz_id,
         questionIndex: index
       })}// Placeholder for your click handling logic
     >

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1060921865789",
+    "project_id": "rquiz-5e2cc",
+    "storage_bucket": "rquiz-5e2cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1060921865789:android:353a1434ba11666f351c54",
+        "android_client_info": {
+          "package_name": "com.rquiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnJzUcYye2myTXB7z6OsSf4tw74B6c9SU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
