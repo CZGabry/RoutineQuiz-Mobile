@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Config from '../../config';
 const QuizPageScreen = ({ route }) => {
   const { quizId, questionIndex } = route.params;
   const [question, setQuestion] = useState(null);
@@ -17,7 +17,7 @@ const QuizPageScreen = ({ route }) => {
       }
       console.log('Fetching quiz details for quiz ID:', quizId);
       console.log('Quiz ID:', questionIndex);
-      axios.get(`http://10.0.2.2:3000/api/quizzes/${quizId}`, {
+      axios.get(`${Config.API_URL}/quizzes/${quizId}`, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
         },

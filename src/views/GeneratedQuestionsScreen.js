@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Config from '../../config';
 
 const GeneratedQuestionsScreen = ({navigation}) => {
   const [quizzes, setQuizzes] = useState([]);
@@ -13,7 +14,7 @@ const GeneratedQuestionsScreen = ({navigation}) => {
       return;
     }
 
-    axios.get('http://10.0.2.2:3000/api/quizzes', {
+    axios.get(Config.API_URL +'/quizzes', {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },

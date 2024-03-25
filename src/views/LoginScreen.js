@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import Config from '../../config';
 
 function LoginScreen() {
   const [userData, setUserData] = useState({ identifier: '', password: '' });
@@ -19,7 +20,7 @@ function LoginScreen() {
 
   const handleLogin = () => {
     console.log('Attempting login with:', userData);
-    axios.post('http://10.0.2.2:3000/api/login', userData)
+    axios.post(Config.API_URL +'/login', userData)
       .then(async response => {
         console.log('Login successful:', response.data);
         await AsyncStorage.setItem('userToken', response.data.token);
