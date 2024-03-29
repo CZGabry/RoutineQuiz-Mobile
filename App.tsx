@@ -5,6 +5,7 @@ import AppNavigator from './src/navigation/AppNavigator';
 import PushNotification from 'react-native-push-notification';
 import { navigationRef } from './src/navigation/NavigationService';
 import * as RootNavigation from './src/navigation/NavigationService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const navTheme = DefaultTheme;
 navTheme.colors.background = 'transparent';
@@ -40,6 +41,7 @@ function App() {
       const token = await messaging().getToken();
       console.log("token");
       console.log(token);
+      await AsyncStorage.setItem('deviceToken', token);
     }
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
@@ -56,7 +58,7 @@ function App() {
     onNotification: function (notification) {
       console.log('Notification clicked', notification);
       // Directly access `shortcutId` from the notification
-      const quizId = notification.shortcutId;
+      const quizId = notification.data.questionid;
       console.log("quizId:", quizId);
       if (quizId) { // Check if `quizId` is truthy. This means it exists and is not null, undefined, or an empty string
         // Navigate to the 'QuizPageScreen' with `quizId`

@@ -9,7 +9,7 @@ import GeneratedQuestionsScreen from '../views/GeneratedQuestionsScreen';
 import QuizPageScreen from '../views/QuizPageScreen';
 import RoutineManagerScreen from '../views/RoutineManagerScreen';
 import LeftArrowIcon from '../assets/images/leftArrow.png';
-
+import styles from '../styles/AppStyles'; 
 const Stack = createNativeStackNavigator();
 
 function AppNavigator() {
@@ -31,7 +31,7 @@ function AppNavigator() {
             headerTitle: '', // Optionally, you can remove the title or customize it
             headerLeft: () => (
               <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-                <Image source={LeftArrowIcon} style={{ width: 25, height: 25, marginLeft: 15 }} />
+                <Image source={LeftArrowIcon} style={styles.leftArrowIcon} />
               </TouchableOpacity>
             ),
             // You might also want to adjust the headerTintColor if necessary, for better visibility against the background
@@ -47,7 +47,7 @@ function AppNavigator() {
             headerTitle: '', // Optionally, you can remove the title or customize it
             headerLeft: () => (
               <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-                <Image source={LeftArrowIcon} style={{ width: 25, height: 25, marginLeft: 15 }} />
+                <Image source={LeftArrowIcon} style={styles.leftArrowIcon} />
               </TouchableOpacity>
             ),
             // You might also want to adjust the headerTintColor if necessary, for better visibility against the background
@@ -63,7 +63,7 @@ function AppNavigator() {
             headerTitle: '', // Optionally, you can remove the title or customize it
             headerLeft: () => (
               <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-                <Image source={LeftArrowIcon} style={{ width: 25, height: 25, marginLeft: 15 }} />
+                <Image source={LeftArrowIcon} style={styles.leftArrowIcon} />
               </TouchableOpacity>
             ),
             // You might also want to adjust the headerTintColor if necessary, for better visibility against the background
@@ -79,7 +79,7 @@ function AppNavigator() {
             headerTitle: '', // Optionally, you can remove the title or customize it
             headerLeft: () => (
               <TouchableOpacity onPress={() => navigation.navigate('GeneratedQuestionsScreen')}>
-                <Image source={LeftArrowIcon} style={{ width: 25, height: 25, marginLeft: 15 }} />
+                <Image source={LeftArrowIcon} style={styles.leftArrowIcon} />
               </TouchableOpacity>
             ),
             // You might also want to adjust the headerTintColor if necessary, for better visibility against the background

@@ -33,6 +33,26 @@ const GeneratedQuestionsScreen = ({navigation}) => {
     fetchQuizzes();
   }, []);
 
+  const deleteQuiz = async () => {
+    // Assuming you have a way to select or identify a specific quiz to delete
+    console.log('Deleting quiz:');
+    const userToken = await AsyncStorage.getItem('userToken');
+    
+    axios.delete(`${Config.API_URL}/delete_quiz`, {
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+      },
+    })
+    .then(response => {
+      console.log('Quiz deleted:', response.data);
+      // Optionally refresh the quizzes list after deletion
+      fetchQuizzes();
+    })
+    .catch(error => {
+      console.error('Error deleting quiz:', error);
+    });
+  };
+
   const renderItem = ({ item, index }) => (
     console.log(item),
     <TouchableOpacity
@@ -48,7 +68,14 @@ const GeneratedQuestionsScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Quizzes</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Quizzes</Text>
+        {quizzes != undefined && quizzes.length > 0 && (
+        <TouchableOpacity onPress={deleteQuiz} style={styles.deleteButton}>
+          <Text style={styles.deleteButtonText}>Delete</Text>
+        </TouchableOpacity>
+      )}
+      </View>
       <FlatList
         data={quizzes}
         renderItem={renderItem}
@@ -78,6 +105,20 @@ const styles = StyleSheet.create({
   cell: {
     margin: 5,
     flexShrink: 1,
+  },
+  header: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  deleteButton: {
+    paddingVertical: 5, // Riduce il padding verticale per rendere il bottone più basso
+    paddingHorizontal: 10, // Mantiene un padding orizzontale per non stringere il testo ai lati
+    backgroundColor: 'red', // Stile di esempio
+    borderRadius: 5, // Aggiunge bordi arrotondati con un raggio di 20px
+},
+  deleteButtonText: {
+    color: 'white',
   },
 });
 

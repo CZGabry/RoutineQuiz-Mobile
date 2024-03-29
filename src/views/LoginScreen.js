@@ -14,12 +14,15 @@ import { useNavigation } from '@react-navigation/native';
 import Config from '../../config';
 
 function LoginScreen() {
-  const [userData, setUserData] = useState({ identifier: '', password: '' });
+  const [userData, setUserData] = useState({ identifier: '', password: '', device_token: '' });
   const [errorMessage, setErrorMessage] = useState('');
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    console.log('Attempting login with:', userData);
+  const handleLogin = async () => {
+    console.log('Attempting login :', Config.API_URL +'/login');
+    
+    userData.device_token = await AsyncStorage.getItem('deviceToken');
+    console.log('token login :', userData.device_token);
     axios.post(Config.API_URL +'/login', userData)
       .then(async response => {
         console.log('Login successful:', response.data);

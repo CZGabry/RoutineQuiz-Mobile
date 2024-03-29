@@ -59,13 +59,13 @@ const UploadTextScreen = ({ navigation }) => {
         onChangeText={setTextInput}
         value={textInput}
       />
-      <Picker
-        selectedValue={selectedNumber}
-        style={styles.picker}
-        onValueChange={(itemValue) => setSelectedNumber(itemValue)}>
-        {Array.from({ length: 20 }, (_, i) => (
-          <Picker.Item key={i} label={`${i + 1}`} value={i + 1} />
-        ))}
+        <Picker
+          selectedValue={selectedNumber}
+          style={styles.picker}
+          onValueChange={(itemValue) => setSelectedNumber(itemValue)}>
+          {Array.from({ length: 16 }, (_, i) => ( // 16 items for numbers 5 to 20
+            <Picker.Item key={i} label={`${i + 5}`} value={i + 5} /> // Starts at 5
+          ))}
       </Picker>
       {message !== '' && <Text>{message}</Text>}
       <Button title="Upload" onPress={sendText} disabled={loading} />
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 10,
     marginBottom: 20,
+    maxHeight: 250
   },
   picker: {
     width: 150,

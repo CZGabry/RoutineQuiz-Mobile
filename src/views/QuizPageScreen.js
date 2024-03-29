@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from '../../config';
+
 const QuizPageScreen = ({ route }) => {
   const { quizId, questionIndex } = route.params;
   const [question, setQuestion] = useState(null);
-  const [feedbackMessage, setFeedbackMessage] = useState('');
+  // Updated to include both message and a flag indicating if the answer is correct
+  const [feedback, setFeedback] = useState({message: '', isCorrect: false});
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
@@ -16,7 +18,6 @@ const QuizPageScreen = ({ route }) => {
         return;
       }
       console.log('Fetching quiz details for quiz ID:', quizId);
-      console.log('Quiz ID:', questionIndex);
       axios.get(`${Config.API_URL}/quizzes/${quizId}`, {
         headers: {
           'Authorization': `Bearer ${userToken}`,
@@ -35,13 +36,13 @@ const QuizPageScreen = ({ route }) => {
   }, [quizId]);
 
   const checkAnswer = (selectedOptionIndex) => {
-    if (!question) return; // Check if the question data has been loaded
+    if (!question) return;
 
     const correctAnswerIndex = ['A', 'B', 'C', 'D'].indexOf(question.correct_answer);
     if (selectedOptionIndex === correctAnswerIndex) {
-      setFeedbackMessage('Correct Answer!');
+      setFeedback({message: 'Correct Answer!', isCorrect: true});
     } else {
-      setFeedbackMessage('Wrong Answer.');
+      setFeedback({message: 'Wrong Answer.', isCorrect: false});
     }
   };
 
@@ -49,19 +50,24 @@ const QuizPageScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-  <Text style={styles.question}>
-    {typeof questionIndex === 'number' ? `${questionIndex + 1}. ${question.question}` : `${question.question}`}
-  </Text>
-  {question.options.map((option, index) => (
-    <TouchableOpacity
-      key={index}
-      style={styles.option}
-      onPress={() => checkAnswer(index)}>
-      <Text>{option}</Text>
-    </TouchableOpacity>
-  ))}
-  {feedbackMessage ? <Text style={styles.feedback}>{feedbackMessage}</Text> : null}
-</View>
+      <Text style={styles.question}>
+        {typeof questionIndex === 'number' ? `${questionIndex + 1}. ${question.question}` : `${question.question}`}
+      </Text>
+      {question.options.map((option, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.option}
+          onPress={() => checkAnswer(index)}>
+          <Text>{option}</Text>
+        </TouchableOpacity>
+      ))}
+      {/* Adjust the feedback style based on the answer correctness */}
+      {feedback.message ? (
+        <Text style={[styles.feedback, feedback.isCorrect ? null : styles.wrongAnswer]}>
+          {feedback.message}
+        </Text>
+      ) : null}
+    </View>
   );
 };
 
@@ -82,7 +88,10 @@ const styles = StyleSheet.create({
   feedback: {
     marginTop: 20,
     fontSize: 18,
-    color: 'green', // Feel free to change the color based on your design
+    color: 'green',
+  },
+  wrongAnswer: {
+    color: 'red', // Style for wrong answers
   },
 });
 
