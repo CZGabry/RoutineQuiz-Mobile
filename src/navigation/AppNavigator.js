@@ -4,6 +4,7 @@ import { TouchableOpacity, Image } from 'react-native';
 import LoginScreen from '../views/LoginScreen';
 import HomeScreen from '../views/HomeScreen';
 import UploadTextScreen from '../views/UploadTextScreen';
+import GeneratedSetsScreen from '../views/GeneratedSetsScreen';
 import Background from '../components/BackgroundComponent'; // Adjust the import path as necessary
 import GeneratedQuestionsScreen from '../views/GeneratedQuestionsScreen';
 import QuizPageScreen from '../views/QuizPageScreen';
@@ -39,6 +40,22 @@ function AppNavigator() {
           })}
         />
         <Stack.Screen
+          name="GeneratedSetsScreen"
+          component={GeneratedSetsScreen}
+          options={({ navigation }) => ({
+            headerShown: true, // Show the header for this screen
+            headerTransparent: true, // Make the header transparent
+            headerTitle: '', // Optionally, you can remove the title or customize it
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+                <Image source={LeftArrowIcon} style={styles.leftArrowIcon} />
+              </TouchableOpacity>
+            ),
+            // You might also want to adjust the headerTintColor if necessary, for better visibility against the background
+            headerTintColor: '#fff', // This sets the back button and title (if any) color to white
+          })}
+        /> 
+        <Stack.Screen
           name="GeneratedQuestionsScreen"
           component={GeneratedQuestionsScreen}
           options={({ navigation }) => ({
@@ -46,7 +63,7 @@ function AppNavigator() {
             headerTransparent: true, // Make the header transparent
             headerTitle: '', // Optionally, you can remove the title or customize it
             headerLeft: () => (
-              <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+              <TouchableOpacity onPress={() => navigation.navigate('GeneratedSetsScreen')}>
                 <Image source={LeftArrowIcon} style={styles.leftArrowIcon} />
               </TouchableOpacity>
             ),

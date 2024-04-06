@@ -2,10 +2,10 @@
 
 // const Config = {
 //   development: {
-//     API_URL: 'http://10.0.2.2:3000/api',
+//     API_URL: 'http://10.5.0.2:5050/api',
 //   },
 //   staging: {
-//     API_URL: 'http://staging.example.com/api',
+//     API_URL: 'https://ai-quiz-server.azurewebsites.net/api',
 //   },
 //   production: {
 //     API_URL: 'http://example.com/api',

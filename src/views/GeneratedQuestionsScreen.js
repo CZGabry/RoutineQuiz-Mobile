@@ -4,7 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Config from '../../config';
 
-const GeneratedQuestionsScreen = ({navigation}) => {
+const GeneratedQuestionsScreen = ({navigation, route}) => {
+  const { setId } = route.params;
   const [quizzes, setQuizzes] = useState([]);
 
   const fetchQuizzes = async () => {
@@ -13,8 +14,8 @@ const GeneratedQuestionsScreen = ({navigation}) => {
       console.error('User token not found in async storage');
       return;
     }
-
-    axios.get(Config.API_URL +'/quizzes', {
+  
+    axios.get(`${Config.API_URL}/quizzes/${setId}`, { // Use `setId` in the API endpoint or as a parameter
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
@@ -25,7 +26,6 @@ const GeneratedQuestionsScreen = ({navigation}) => {
       })
     .catch(error => {
         console.error('Error making request:', error);
-        console.log(error.config); // This will show you the request configuration
     });
   };
 
@@ -34,19 +34,20 @@ const GeneratedQuestionsScreen = ({navigation}) => {
   }, []);
 
   const deleteQuiz = async () => {
-    // Assuming you have a way to select or identify a specific quiz to delete
-    console.log('Deleting quiz:');
     const userToken = await AsyncStorage.getItem('userToken');
-    
-    axios.delete(`${Config.API_URL}/delete_quiz`, {
+    if (!userToken) {
+      console.error('User token not found in async storage');
+      return;
+    }
+  
+    axios.delete(`${Config.API_URL}/delete_quiz/${setId}`, { // Modify as needed based on how your API expects to receive `setId`
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
     })
     .then(response => {
       console.log('Quiz deleted:', response.data);
-      // Optionally refresh the quizzes list after deletion
-      fetchQuizzes();
+      navigation.navigate('GeneratedSetsScreen'); // Refresh the quizzes list after deletion
     })
     .catch(error => {
       console.error('Error deleting quiz:', error);

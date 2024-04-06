@@ -15,7 +15,6 @@ const daysOfWeek = [
   { name: 'Sunday', value: 7 },
 ];
 
-
 const RoutineManager = () => {
   const [selectedDays, setSelectedDays] = useState([]);
   const [hours, setHours] = useState([]);
@@ -35,10 +34,8 @@ const RoutineManager = () => {
         .then(response => {
           const { days, hours } = response.data.routine;
           if (days.length > 0 && hours.length > 0) {
-            // Set selected days with IDs
             setSelectedDays(days);
         
-            // Convert hours with IDs
             const routineHours = hours.map(({id, time}) => {
               const [hour, minute] = time.split(':');
               const date = new Date();
@@ -46,8 +43,6 @@ const RoutineManager = () => {
               return { id, time: date };
             });
             setHours(routineHours);
-        
-            // Prepare showPicker state based on the hours
             setShowPicker(routineHours.map(() => false));
           } else {
             setMessage('No routines found.');
@@ -70,25 +65,16 @@ const RoutineManager = () => {
       setLoading(false);
     });
   }, []);
-  
-  
 
   const handleDayToggle = (dayValue) => {
-    console.log("dayValue:", dayValue);
-    console.log("selectedDays", JSON.stringify(selectedDays));
-  
     if (dayValue === 0) {
-      // When 'All' is selected
       const isSelectingAll = selectedDays.length < daysOfWeek.length - 1;
       setSelectedDays(isSelectingAll ? daysOfWeek.slice(1).map(day => ({ day: day.value, id: day.value })) : []);
     } else {
       const dayExists = selectedDays.some(selectedDay => selectedDay.day === dayValue);
       if (dayExists) {
-        // Remove the day if it's already selected
         setSelectedDays(selectedDays.filter(selectedDay => selectedDay.day !== dayValue));
       } else {
-        // Add the day if it's not already selected
-        // Assuming 'id' should be unique, consider how you generate it. Here, just using dayValue for simplicity.
         setSelectedDays([...selectedDays, { day: dayValue, id: dayValue }]);
       }
     }
@@ -101,11 +87,9 @@ const RoutineManager = () => {
         id: newHourId,
         time: selectedDate,
       };
-      console.log("conf9iirm:", selectedDate);
       setHours([...hours, newHour]);
       setIsSelectingNewHour(false); // Close the picker
     } else {
-      // Handle case when user cancels the picker, if needed
       setIsSelectingNewHour(false);
     }
   };
@@ -118,7 +102,6 @@ const RoutineManager = () => {
     setHours(newHours);
     setShowPicker(newShowPicker);
   };
-  
 
   const submitRoutine = async () => {
     setLoading(true);
@@ -131,7 +114,7 @@ const RoutineManager = () => {
           hours: hours.map(hour => ({ id: hour.id, time: hour.time.toISOString() })),
           user_token: userToken,
         };
-        const response = await axios.post(Config.API_URL +'/setroutine', payload);
+        await axios.post(Config.API_URL +'/setroutine', payload);
         setMessage('Routine saved successfully');
       } else {
         setMessage('User token not found. Please login again.');
@@ -144,7 +127,7 @@ const RoutineManager = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContent}>
       <Text style={styles.title}>Select Days</Text>
       <View style={styles.daysRow}>
         {daysOfWeek.map(day => (
@@ -169,11 +152,9 @@ const RoutineManager = () => {
           </TouchableOpacity>
         </View>
       ))}
+      <View style={{marginTop: 10}}></View>
+      <Button onPress={() => setIsSelectingNewHour(true)} title="Add Hour" disabled={hours.length >= 20 || isSelectingNewHour} />
       
-      {/* Button to trigger adding a new hour - Opens picker directly */}
-      <Button onPress={() => setIsSelectingNewHour(true)} title="Add Hour" disabled={hours.length >= 10 || isSelectingNewHour} />
-      
-      {/* DateTimePicker for new hour selection */}
       {isSelectingNewHour && (
         <DateTimePicker
           value={newHourTime}
@@ -188,8 +169,12 @@ const RoutineManager = () => {
         />
       )}
       
-      <Button onPress={submitRoutine} title="Submit" disabled={loading} />
+      {/* Spacer View to ensure margin at the bottom */}
+      <View style={{marginTop: 10}}></View>
+      
+      <Button style={styles.submitButton} onPress={submitRoutine} title="Submit" disabled={loading} />
       {message ? <Text>{message}</Text> : null}
+      <View style={{paddingBottom: 50}}></View>
     </ScrollView>
   );
   
@@ -198,6 +183,9 @@ const RoutineManager = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+  },
+  scrollViewContent: {
+    paddingBottom: 20, // This ensures padding at the bottom
   },
   title: {
     fontSize: 18,
@@ -238,35 +226,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
   },
-  hourButton: {
-    flex: 14, // Adjust to take 5/6 of the space
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginRight: 10, // Add some margin between this button and the delete button
-  },
   hourText: {
     flex: 14,
     padding: 10,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
-    marginRight: 10, // Adjust based on your design
+    marginRight: 10,
   },
   deleteButton: {
-    flex: 1, // Adjust to take 1/6 of the space
+    flex: 1,
     backgroundColor: 'red',
     padding: 5,
-    justifyContent: 'center', // Center the X vertically
-    alignItems: 'center', // Center the X horizontally
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 5,
   },
   deleteButtonText: {
     color: 'white',
     fontWeight: 'bold',
   },
-  
+  submitButton: {
+    marginBottom: 20,
+  }
 });
 
 export default RoutineManager;

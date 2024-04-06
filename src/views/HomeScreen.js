@@ -11,7 +11,7 @@ const HomeScreen = ({ navigation }) => {
 
   // Example functions for your buttons
   const generateQuiz = () => navigation.navigate('UploadTextScreen');
-  const generatedQuiz = () => navigation.navigate('GeneratedQuestionsScreen');
+  const generatedSets = () => navigation.navigate('GeneratedSetsScreen');
   const routineManager = () => navigation.navigate('RoutineManagerScreen');
 
   return (
@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.buttonText}>Upload</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={[styles.button, styles.transparentButton]} onPress={generatedQuiz}>
+        <TouchableOpacity style={[styles.button, styles.transparentButton]} onPress={generatedSets}>
           <Text style={styles.buttonText}>Generated</Text>
         </TouchableOpacity>
 

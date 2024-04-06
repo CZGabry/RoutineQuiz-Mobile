@@ -7,8 +7,8 @@ import Config from '../../config';
 const QuizPageScreen = ({ route }) => {
   const { quizId, questionIndex } = route.params;
   const [question, setQuestion] = useState(null);
-  // Updated to include both message and a flag indicating if the answer is correct
-  const [feedback, setFeedback] = useState({message: '', isCorrect: false});
+  // Updated to include both message, explanation, and a flag indicating if the answer is correct
+  const [feedback, setFeedback] = useState({message: '', explanation: '', isCorrect: false});
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
@@ -31,7 +31,7 @@ const QuizPageScreen = ({ route }) => {
           console.error('Error fetching quiz details:', error);
       });
     };
-
+    setFeedback({message: '', explanation: '', isCorrect: false});
     fetchQuizDetails();
   }, [quizId]);
 
@@ -39,11 +39,14 @@ const QuizPageScreen = ({ route }) => {
     if (!question) return;
 
     const correctAnswerIndex = ['A', 'B', 'C', 'D'].indexOf(question.correct_answer);
-    if (selectedOptionIndex === correctAnswerIndex) {
-      setFeedback({message: 'Correct Answer!', isCorrect: true});
-    } else {
-      setFeedback({message: 'Wrong Answer.', isCorrect: false});
-    }
+    const isCorrect = selectedOptionIndex === correctAnswerIndex;
+    const feedbackMessage = isCorrect ? 'Correct Answer!' : 'Wrong Answer.';
+    // Update the feedback state to include the explanation
+    setFeedback({
+      message: feedbackMessage,
+      explanation: question.explanation, // Assuming this is how you access the explanation
+      isCorrect: isCorrect,
+    });
   };
 
   if (!question) return <View style={styles.container}><Text>Loading...</Text></View>;
@@ -51,7 +54,7 @@ const QuizPageScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.question}>
-        {typeof questionIndex === 'number' ? `${questionIndex + 1}. ${question.question}` : `${question.question}`}
+        {typeof questionIndex === 'number' ? `${questionIndex + 1}. ${question.question}` : question.question}
       </Text>
       {question.options.map((option, index) => (
         <TouchableOpacity
@@ -61,11 +64,16 @@ const QuizPageScreen = ({ route }) => {
           <Text>{option}</Text>
         </TouchableOpacity>
       ))}
-      {/* Adjust the feedback style based on the answer correctness */}
       {feedback.message ? (
-        <Text style={[styles.feedback, feedback.isCorrect ? null : styles.wrongAnswer]}>
-          {feedback.message}
-        </Text>
+        <>
+          <Text style={[styles.feedback, feedback.isCorrect ? null : styles.wrongAnswer]}>
+            {feedback.message}
+          </Text>
+          {/* Display the explanation */}
+          <Text style={styles.explanation}>
+            Explanation: {feedback.explanation}
+          </Text>
+        </>
       ) : null}
     </View>
   );
@@ -92,6 +100,11 @@ const styles = StyleSheet.create({
   },
   wrongAnswer: {
     color: 'red', // Style for wrong answers
+  },
+  explanation: {
+    marginTop: 10,
+    fontSize: 16, // You can adjust the size as needed
+    color: '#666', // This is a neutral color, but you can choose whatever fits your app
   },
 });
 
