@@ -13,7 +13,7 @@
 // }[environment];
 
 const Config = {
-  API_URL: 'https://ai-quiz-server.azurewebsites.net/api',
+  API_URL: 'http://10.5.0.2:5050/api',
   };
 
 export default Config;

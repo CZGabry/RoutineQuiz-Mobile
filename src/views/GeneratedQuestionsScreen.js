@@ -15,7 +15,7 @@ const GeneratedQuestionsScreen = ({navigation, route}) => {
       return;
     }
   
-    axios.get(`${Config.API_URL}/quizzes/${setId}`, { // Use `setId` in the API endpoint or as a parameter
+    axios.get(`${Config.API_URL}/quizzes_by_set/${setId}`, { // Use `setId` in the API endpoint or as a parameter
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },

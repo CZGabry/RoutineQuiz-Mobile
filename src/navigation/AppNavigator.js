@@ -95,7 +95,7 @@ function AppNavigator() {
             headerTransparent: true, // Make the header transparent
             headerTitle: '', // Optionally, you can remove the title or customize it
             headerLeft: () => (
-              <TouchableOpacity onPress={() => navigation.navigate('GeneratedQuestionsScreen')}>
+              <TouchableOpacity onPress={() => navigation.navigate('GeneratedSetsScreen')}>
                 <Image source={LeftArrowIcon} style={styles.leftArrowIcon} />
               </TouchableOpacity>
             ),
