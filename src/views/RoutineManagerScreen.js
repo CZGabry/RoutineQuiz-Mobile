@@ -161,7 +161,16 @@ const RoutineManager = () => {
           })),
           user_token: userToken,
         };
-        await axios.post(Config.API_URL +'/setroutine', payload);
+        
+        // Define the headers
+        const config = {
+          headers: {
+            'Authorization': `Bearer ${userToken}`
+          }
+        };
+
+        // Pass the headers in the axios call
+        await axios.post(Config.API_URL + '/setroutine', payload, config);
         setMessage('Routine saved successfully');
       } else {
         setMessage('User token not found. Please login again.');
@@ -171,7 +180,7 @@ const RoutineManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+};
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContent}>
