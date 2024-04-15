@@ -1,9 +1,32 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Config from '../../config';
 import { useFocusEffect } from '@react-navigation/native';
+
+const SetItem = ({ item, index, navigation }) => {
+  const opacity = new Animated.Value(0);
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  return (
+    <TouchableOpacity
+      style={styles.row}
+      onPress={() => navigation.navigate('GeneratedQuestionsScreen', { setId: item.set_id })}
+    >
+      <Animated.View style={{ ...styles.cellWrapper, opacity }}>
+        <Text style={styles.cell}>{`${index + 1} - ${item.topic} (${item.number_of_questions} questions)`}</Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
 
 const GeneratedSetsScreen = ({ navigation }) => {
   const [sets, setSets] = useState([]);
@@ -15,37 +38,24 @@ const GeneratedSetsScreen = ({ navigation }) => {
       return;
     }
 
-    axios.get(Config.API_URL + '/get_sets_by_user', {
+    axios.get(`${Config.API_URL}/get_sets_by_user`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
       },
     })
     .then(response => {
-        console.log('Response:', response.data);
-        setSets(response.data.sets); // Assuming the API response structure
-      })
+      setSets(response.data.sets); // Assuming the API response structure
+    })
     .catch(error => {
-        console.error('Error making request:', error);
+      console.error('Error making request:', error);
     });
   };
 
   useFocusEffect(
     useCallback(() => {
       fetchSets();
-      // Optional: Return a callback to execute on component un-focus
       return () => {};
     }, [])
-  );
-
-  const renderItem = ({ item, index }) => (
-    <TouchableOpacity
-      style={styles.row}
-      onPress={() => navigation.navigate('GeneratedQuestionsScreen', {
-        setId: item.set_id,
-      })}
-    >
-      <Text style={styles.cell}>{`${index + 1} - ${item.topic} (${item.number_of_questions} questions)`}</Text>
-    </TouchableOpacity>
   );
 
   return (
@@ -55,12 +65,15 @@ const GeneratedSetsScreen = ({ navigation }) => {
       </View>
       <FlatList
         data={sets}
-        renderItem={renderItem}
+        renderItem={({ item, index }) => (
+          <SetItem item={item} index={index} navigation={navigation} />
+        )}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -68,9 +81,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 25,
+    fontFamily: 'Cheveuxdange',
     marginBottom: 20,
+    marginTop: 10,
   },
   row: {
     flexDirection: 'row',
@@ -78,10 +92,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
     padding: 10,
+    backgroundColor: '#FFF', // Light background
+    borderRadius: 8, // Rounded corners
+    shadowColor: "#000", // Shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, // Elevation for Android
   },
   cell: {
     margin: 5,
     flexShrink: 1,
+    fontSize: 16, // Slightly larger text
+    color: '#333', // Darker text color for better readability
   },
   header: {
     justifyContent: 'space-between',

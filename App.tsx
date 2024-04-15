@@ -11,14 +11,23 @@ const navTheme = DefaultTheme;
 navTheme.colors.background = 'transparent';
 function App() {
 
+  const checkLoginAndRedirect = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken'); // Assuming 'userToken' is the key where you store your token
+      console.log('User Token:', userToken);
+      if (userToken) {
+        RootNavigation.navigate('HomeScreen');
+      }
+    } catch (error) {
+      console.log('Error checking login status:', error);
+    }
+  };
+
   async function requestUserPermission() {
-    console.log('requesting permission');
     const authStatus = await messaging().requestPermission();
-    console.log('requesting permission');
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-      console.log('enabled status:', enabled);
     if (enabled) {
       console.log('Authorization status:', authStatus);
     }
@@ -37,7 +46,6 @@ function App() {
   );
     
   const getToken = async() => {
-    console.log("token1");
       const token = await messaging().getToken();
       console.log("token");
       console.log(token);
@@ -52,25 +60,27 @@ function App() {
   useEffect(() => {
     requestUserPermission();
     getToken();
+    checkLoginAndRedirect();
   },[])
 
   PushNotification.configure({
     onNotification: function (notification) {
       console.log('Notification clicked', notification);
-      // Directly access `shortcutId` from the notification
-      const quizId = notification.data.questionid;
-      console.log("quizId:", quizId);
-      if (quizId) { // Check if `quizId` is truthy. This means it exists and is not null, undefined, or an empty string
-        // Navigate to the 'QuizPageScreen' with `quizId`
-        RootNavigation.navigate('QuizPageScreen', {
-          quizId: quizId
-        });
+      // Assuming the app is fully initialized here; if not, consider using AsyncStorage to temporarily store this data
+      const quizId = notification.data?.questionid;
+      if (quizId) {
+        // Delay navigation to ensure the app is fully loaded, especially after cold starts
+        setTimeout(() => {
+          RootNavigation.navigate('QuizPageScreen', {
+            quizId: quizId
+          });
+        }, 1000); // Adjust delay as needed based on your app's initialization time
       }
     },
-    // Other configuration options...
-});
+  });
 
   useEffect(() => {
+    
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('A new FCM message arrived!', remoteMessage);
   

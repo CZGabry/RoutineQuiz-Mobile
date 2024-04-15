@@ -30,8 +30,7 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity style={[styles.button, styles.transparentButton]} onPress={routineManager}>
           <Text style={styles.buttonText}>Routine</Text>
         </TouchableOpacity>
-        
-        {/* Uncomment if logout button is needed */}
+
         <TouchableOpacity style={[styles.button, styles.transparentButton]} onPress={handleLogout}>
           <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>

@@ -15,14 +15,58 @@ const daysOfWeek = [
   { name: 'Sunday', value: 7 },
 ];
 
+const frequencies = [
+  { label: '10 minutes', value: 10 },
+  { label: '15 minutes', value: 15 },
+  { label: '20 minutes', value: 20 },
+  { label: '30 minutes', value: 30 },
+];
+
 const RoutineManager = () => {
   const [selectedDays, setSelectedDays] = useState([]);
   const [hours, setHours] = useState([]);
-  const [showPicker, setShowPicker] = useState([]);
+  const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [selectedFrequency, setSelectedFrequency] = useState(frequencies[0].value); // Default frequency
+  const [isSelectingStartTime, setIsSelectingStartTime] = useState(false);
+  const [isSelectingEndTime, setIsSelectingEndTime] = useState(false);
   const [isSelectingNewHour, setIsSelectingNewHour] = useState(false);
-  const [newHourTime, setNewHourTime] = useState(new Date());
+  const [showHours, setShowHours] = useState(false); // Step 1: New state variable for controlling visibility
+  const toggleHoursVisibility = () => {
+    setShowHours(!showHours);
+  };
+  const [startTime, setStartTime] = useState(() => {
+    const now = new Date();
+    now.setHours(8, 0, 0, 0); // Example: setting start time to 8:00 AM today, local time
+    return now;
+  });
+  
+  const [endTime, setEndTime] = useState(() => {
+    const now = new Date();
+    now.setHours(17, 0, 0, 0); // Example: setting end time to 5:00 PM today, local time
+    return now;
+  });
+
+  const handleFrequencySelect = (frequencyValue) => {
+    setSelectedFrequency(frequencyValue);
+  };
+
+  const generateTimes = () => {
+    let generatedTimes = [];
+    console.log('Selected start time:', startTime);
+    let currentTime = new Date(startTime.getTime());
+    const endTimeValue = endTime.getTime();
+
+    while (currentTime.getTime() + selectedFrequency * 60000 <= endTimeValue) {
+      generatedTimes.push({
+        id: generatedTimes.length + 1, // Consider using a more robust method for IDs
+        time: new Date(currentTime.getTime()),
+      });
+      currentTime.setMinutes(currentTime.getMinutes() + selectedFrequency);
+    }
+    setHours(generatedTimes);
+};
 
   useEffect(() => {
     setLoading(true);
@@ -111,7 +155,10 @@ const RoutineManager = () => {
       if (userToken) {
         const payload = {
           selectedDays: selectedDays.map(day => day.day),
-          hours: hours.map(hour => ({ id: hour.id, time: hour.time.toISOString() })),
+          hours: hours.map(hour => ({
+            id: hour.id,
+            time: hour.time.toISOString(), // Convert to UTC string before sending
+          })),
           user_token: userToken,
         };
         await axios.post(Config.API_URL +'/setroutine', payload);
@@ -142,18 +189,86 @@ const RoutineManager = () => {
           </TouchableOpacity>
         ))}
       </View>
-  
-      <Text style={styles.title}>Select Hours</Text>
-      {hours.map((hourObj, index) => (
-        <View key={hourObj.id} style={styles.hourRow}>
-          <Text style={styles.hourText}>Hour: {hourObj.time.toLocaleTimeString()}</Text>
-          <TouchableOpacity onPress={() => deleteHour(index)} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>X</Text>
+      <Text style={styles.title}>Select time range</Text>
+      <View style={styles.timeRangeContainer}>
+        <TouchableOpacity onPress={() => setIsSelectingStartTime(true)} style={styles.timeButton}>
+          <Text>{`Start: ${startTime.toLocaleTimeString()}`}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setIsSelectingEndTime(true)} style={styles.timeButton}>
+          <Text>{`End: ${endTime.toLocaleTimeString()}`}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {isSelectingStartTime && (
+        <DateTimePicker
+          value={startTime}
+          mode="time"
+          is24Hour={true}
+          display="default"
+          onChange={(event, selectedDate) => {
+            setStartTime(selectedDate || startTime);
+            setIsSelectingStartTime(false);
+          }}
+        />
+      )}
+
+      {isSelectingEndTime && (
+        <DateTimePicker
+          value={endTime}
+          mode="time"
+          is24Hour={true}
+          display="default"
+          onChange={(event, selectedDate) => {
+            setEndTime(selectedDate || endTime);
+            setIsSelectingEndTime(false);
+          }}
+        />
+      )}
+
+      {/* JSX for selecting frequency */}
+      <Text style={styles.title}>Select Frequency</Text>
+      <View style={styles.frequencyContainer}>
+        {frequencies.map((freq) => (
+          <TouchableOpacity
+            key={freq.value}
+            style={selectedFrequency === freq.value ? styles.freqButtonSelected : styles.freqButton}
+            onPress={() => handleFrequencySelect(freq.value)}
+          >
+            <Text style={styles.freqButtonText}>{freq.label}</Text>
           </TouchableOpacity>
-        </View>
-      ))}
+        ))}
+      </View>
+      
+      <TouchableOpacity style={styles.buttonStyle} onPress={generateTimes}>
+        <Text style={styles.buttonText}>Generate Times</Text>
+      </TouchableOpacity>
       <View style={{marginTop: 10}}></View>
-      <Button onPress={() => setIsSelectingNewHour(true)} title="Add Hour" disabled={hours.length >= 20 || isSelectingNewHour} />
+      <TouchableOpacity style={styles.buttonStyle} onPress={toggleHoursVisibility}>
+        <Text style={styles.buttonText}>{showHours ? "Hide Hours" : "Show Hours"}</Text>
+    </TouchableOpacity>
+
+      {/* Step 4: Conditional Rendering for the "Selected Hours" Section */}
+      {showHours && ( // This block will only render if showHours is true
+        <>
+          <Text style={styles.title}>Select Hours</Text>
+          {hours.map((hourObj, index) => (
+            <View key={hourObj.id} style={styles.hourRow}>
+              <Text style={styles.hourText}>Hour: {hourObj.time.toLocaleTimeString()}</Text>
+              <TouchableOpacity onPress={() => deleteHour(index)} style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>X</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+          <View style={{marginTop: 10}}></View>
+          
+          <TouchableOpacity
+            onPress={() => setIsSelectingNewHour(true)}
+            style={[styles.buttonStyle, (hours.length >= 100 || isSelectingNewHour) && styles.buttonDisabled]}
+            disabled={hours.length >= 100 || isSelectingNewHour}
+          >
+            <Text style={styles.buttonText}>Add Hour</Text>
+          </TouchableOpacity></>
+      )}
       
       {isSelectingNewHour && (
         <DateTimePicker
@@ -172,7 +287,9 @@ const RoutineManager = () => {
       {/* Spacer View to ensure margin at the bottom */}
       <View style={{marginTop: 10}}></View>
       
-      <Button style={styles.submitButton} onPress={submitRoutine} title="Submit" disabled={loading} />
+      <TouchableOpacity style={styles.buttonStyle} onPress={submitRoutine} disabled={loading}>
+          <Text style={styles.buttonText}>Submit</Text>
+      </TouchableOpacity>
       {message ? <Text>{message}</Text> : null}
       <View style={{paddingBottom: 50}}></View>
     </ScrollView>
@@ -181,6 +298,18 @@ const RoutineManager = () => {
 };
 
 const styles = StyleSheet.create({
+  buttonStyle: {
+    padding: 10,
+    borderRadius: 7,
+    backgroundColor: '#373738', // Your desired background color
+    alignItems: 'center', // Center content horizontally
+    justifyContent: 'center', // Center content vertically
+    marginVertical: 5, // Add some vertical margin
+  },
+  buttonText: {
+    color: '#FFF', // Text color that contrasts with the button background
+    fontSize: 16, // Adjust as needed
+  },
   container: {
     padding: 20,
   },
@@ -189,7 +318,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    marginTop:15,
+    fontFamily: 'Cheveuxdange',
     marginBottom: 10,
   },
   daysRow: {
@@ -209,7 +339,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: 'blue',
+    borderColor: '#373738',
     backgroundColor: '#e0f0ff',
     marginBottom: 5,
   },
@@ -219,7 +349,7 @@ const styles = StyleSheet.create({
   dayTextSelected: {
     textAlign: 'center',
     fontWeight: 'bold',
-    color: 'blue',
+    color: '#373738',
   },
   hourRow: {
     flexDirection: 'row',
@@ -248,7 +378,38 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginBottom: 20,
-  }
+  },
+  timeRangeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  timeButton: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  frequencyContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  freqButton: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  freqButtonSelected: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#373738',
+    backgroundColor: '#e0f0ff',
+  },
+  freqButtonText: {
+    textAlign: 'center',
+  },
 });
 
 export default RoutineManager;

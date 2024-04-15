@@ -12,6 +12,18 @@
     {
       "path": "src/assets/fonts/Cheveuxdange.ttf",
       "sha1": "9adc586144016e237a1ad787068498c1e9235b78"
+    },
+    {
+      "path": "src/assets/fonts/E-Pencil.ttf",
+      "sha1": "ceff119071da946ac56e837da76364dea3cef41f"
+    },
+    {
+      "path": "src/assets/fonts/ThinPrint-Regular.ttf",
+      "sha1": "747b640261ad884b8cbb847c1365da46d90a3063"
+    },
+    {
+      "path": "src/assets/fonts/UncutSans.ttf",
+      "sha1": "2cd0ad5fb0ff257c6e17e13c719b11528747aa5a"
     }
   ]
 }
