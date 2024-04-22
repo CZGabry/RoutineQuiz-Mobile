@@ -6,16 +6,24 @@ import PushNotification from 'react-native-push-notification';
 import { navigationRef } from './src/navigation/NavigationService';
 import * as RootNavigation from './src/navigation/NavigationService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { jwtDecode } from "jwt-decode";
 const navTheme = DefaultTheme;
 navTheme.colors.background = 'transparent';
+import "core-js/stable/atob";
 function App() {
 
   const checkLoginAndRedirect = async () => {
     try {
-      const userToken = await AsyncStorage.getItem('userToken'); // Assuming 'userToken' is the key where you store your token
+      const userToken = await AsyncStorage.getItem('userToken');
       console.log('User Token:', userToken);
       if (userToken) {
+        const decodedToken = jwtDecode(userToken);
+        if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
+          await AsyncStorage.removeItem('userToken');
+          RootNavigation.navigate('LoginScreen');
+        } else {
+          RootNavigation.navigate('HomeScreen');
+        }
         RootNavigation.navigate('HomeScreen');
       }
     } catch (error) {
@@ -68,8 +76,9 @@ function App() {
       console.log('Notification clicked', notification);
       // Assuming the app is fully initialized here; if not, consider using AsyncStorage to temporarily store this data
       const quizId = notification.data?.questionid;
+      
       if (quizId) {
-        // Delay navigation to ensure the app is fully loaded, especially after cold starts
+        console.log('Navigate to quiz page with quiz id:', quizId);
         setTimeout(() => {
           RootNavigation.navigate('QuizPageScreen', {
             quizId: quizId
@@ -78,19 +87,20 @@ function App() {
       }
     },
   });
+  
 
   useEffect(() => {
     
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('A new FCM message arrived!', remoteMessage);
-  
+    console.log('A new FCM message arrived!', remoteMessage);
+
       PushNotification.localNotification({
-        channelId: "default-channel-id", // Ensure this matches the channel ID used in createChannel
-        title: remoteMessage.notification?.title || "Default Title", // Use actual title or a default
-        message: remoteMessage.notification?.body || "Default message",
-        shortcutId: remoteMessage.data?.questionid.toString(), // Add any custom data to the notification
+      channelId: "default-channel-id",
+      title: remoteMessage.notification?.title || "Default Title",
+      message: remoteMessage.notification?.body || "Default message",
+      userInfo: { questionid: remoteMessage.data?.questionid },
       });
-    });
+});
   
     return unsubscribe;
   }, []);

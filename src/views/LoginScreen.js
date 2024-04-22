@@ -25,7 +25,7 @@ function LoginScreen() {
     console.log('token login :', userData.device_token);
     axios.post(Config.API_URL +'/login', userData)
       .then(async response => {
-        console.log('Login successful:', response.data);
+        console.log('Login successful:', response.data.token);
         await AsyncStorage.setItem('userToken', response.data.token);
         await AsyncStorage.setItem('userName', response.data.username);
         navigation.navigate('HomeScreen');
