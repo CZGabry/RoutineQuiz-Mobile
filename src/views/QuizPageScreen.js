@@ -9,6 +9,7 @@ const QuizPageScreen = ({ route }) => {
   const [question, setQuestion] = useState(null);
   const [feedback, setFeedback] = useState({ message: '', explanation: '', isCorrect: false });
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(null); // Track the selected option
+  const [answerSubmitted, setAnswerSubmitted] = useState(false); // State to disable further clicks once answer is submitted
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
@@ -34,13 +35,15 @@ const QuizPageScreen = ({ route }) => {
 
     setFeedback({ message: '', explanation: '', isCorrect: false });
     setSelectedOptionIndex(null); // Reset the selected option when fetching new quiz details
+    setAnswerSubmitted(false); // Reset interaction disable state
     fetchQuizDetails();
   }, [quizId]);
 
   const checkAnswer = (selectedOptionIndex) => {
-    if (!question) return;
+    if (!question || answerSubmitted) return;
 
     setSelectedOptionIndex(selectedOptionIndex); // Update the selected option index
+    setAnswerSubmitted(true); // Disable further interactions
     const correctAnswerIndex = ['A', 'B', 'C', 'D'].indexOf(question.correct_answer);
     const isCorrect = selectedOptionIndex === correctAnswerIndex;
     const feedbackMessage = isCorrect ? 'Correct Answer!' : 'Wrong Answer.';
@@ -63,9 +66,13 @@ const QuizPageScreen = ({ route }) => {
           key={index}
           style={[
             styles.option,
-            selectedOptionIndex === index ? (feedback.isCorrect ? styles.correctOption : styles.incorrectOption) : null,
+            answerSubmitted && (selectedOptionIndex === index && feedback.isCorrect) ? styles.correctOption : null,
+            answerSubmitted && (index === ['A', 'B', 'C', 'D'].indexOf(question.correct_answer) && !feedback.isCorrect) ? styles.correctOption : null,
+            answerSubmitted && selectedOptionIndex === index && !feedback.isCorrect ? styles.incorrectOption : null,
           ]}
-          onPress={() => checkAnswer(index)}>
+          onPress={() => checkAnswer(index)}
+          disabled={answerSubmitted}
+        >
           <Text style={styles.optionText}>{option}</Text>
         </TouchableOpacity>
       ))}
@@ -86,7 +93,8 @@ const QuizPageScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,  },
+    padding: 20,
+  },
   question: {
     marginTop: 20,
     fontSize: 22,
@@ -100,8 +108,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0', // Default background color for options
     borderRadius: 8, // Matching the styling of options/buttons
   },
-  optionText: { // Added style for the option text
-    fontSize: 15, // Increased font size for better readability
+  optionText: {
+    fontSize: 15,
   },
   correctOption: {
     backgroundColor: 'green', // Correct answer background color

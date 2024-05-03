@@ -17,13 +17,16 @@ const UploadTextScreen = ({ navigation }) => {
 
     AsyncStorage.getItem('userToken').then((userToken) => {
       if (userToken) {
+        const headers = {
+          Authorization: `Bearer ${userToken}` // Include the token in the Authorization header
+        };
+
         const payload = {
           text: textInput,
           number_of_questions: selectedNumber,
-          user_token: userToken,
         };
 
-        axios.post(Config.API_URL + '/upload_note', payload)
+        axios.post(Config.API_URL + '/upload_note', payload, { headers })
           .then(response => {
             console.log('Upload successful:', response.data);
             setMessage('Questions generated');
@@ -47,7 +50,7 @@ const UploadTextScreen = ({ navigation }) => {
       setMessage('An error occurred. Please try again.');
       setLoading(false);
     });
-  };
+};
 
   return (
     <View style={styles.container}>
